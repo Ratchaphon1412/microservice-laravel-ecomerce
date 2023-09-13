@@ -1,8 +1,10 @@
 <?php
+namespace App\Infrastructure\Kafka;
 
 use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Producers\MessageBatch;
 use Junges\Kafka\Message\Message;
+
 
 class Producer
 {
