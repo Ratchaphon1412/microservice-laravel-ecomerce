@@ -14,7 +14,7 @@ class TestController extends Controller
     public function index()
     {
         //
-
+        $producer =  Producer::produce("test", "Hello World");
         // $kafkaProducer->produce("test", "Hello World");
         return ["message" => "Hello World"];
     }
