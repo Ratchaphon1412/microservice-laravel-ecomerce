@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Infrastructure\Kafka\Producer;
 use Illuminate\Http\Request;
 
-
 class TestController extends Controller
 {
     /**
@@ -14,9 +13,10 @@ class TestController extends Controller
     public function index()
     {
         //
-        $producer =  Producer::produce("test", "Hello World");
-        // $kafkaProducer->produce("test", "Hello World");
-        return ["message" => "Hello World"];
+
+        $message = Producer::produce("laravel", "Hello world");
+
+        return ["message" => $message];
     }
 
     /**
