@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a014cb6fd62955e3f5274095b34df2c",
+    "content-hash": "c80c847653e01b174a89e362495f2c9b",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1269,16 +1269,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v10.22.0",
+            "version": "v10.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "9234388a895206d4e1df37342b61adc67e5c5d31"
+                "reference": "7d6a79ce8ff52a4d0d385ac290dcc048aa514ce7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/9234388a895206d4e1df37342b61adc67e5c5d31",
-                "reference": "9234388a895206d4e1df37342b61adc67e5c5d31",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/7d6a79ce8ff52a4d0d385ac290dcc048aa514ce7",
+                "reference": "7d6a79ce8ff52a4d0d385ac290dcc048aa514ce7",
                 "shasum": ""
             },
             "require": {
@@ -1465,20 +1465,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-09-05T13:20:01+00:00"
+            "time": "2023-09-12T15:55:31+00:00"
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.1.6",
+            "version": "v0.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "b514c5620e1b3b61221b0024dc88def26d9654f4"
+                "reference": "554e7d855a22e87942753d68e23b327ad79b2070"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/b514c5620e1b3b61221b0024dc88def26d9654f4",
-                "reference": "b514c5620e1b3b61221b0024dc88def26d9654f4",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/554e7d855a22e87942753d68e23b327ad79b2070",
+                "reference": "554e7d855a22e87942753d68e23b327ad79b2070",
                 "shasum": ""
             },
             "require": {
@@ -1511,9 +1511,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.1.6"
+                "source": "https://github.com/laravel/prompts/tree/v0.1.7"
             },
-            "time": "2023-08-18T13:32:23+00:00"
+            "time": "2023-09-12T11:09:22+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -3458,6 +3458,66 @@
                 }
             ],
             "time": "2023-04-15T23:01:58+00:00"
+        },
+        {
+            "name": "recca0120/repository",
+            "version": "v2.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/recca0120/laravel-repository.git",
+                "reference": "4877f2798c2597d162d7ee571d45d2ecfb628f83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/recca0120/laravel-repository/zipball/4877f2798c2597d162d7ee571d45d2ecfb628f83",
+                "reference": "4877f2798c2597d162d7ee571d45d2ecfb628f83",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/database": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/events": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/pagination": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/support": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "fzaninotto/faker": "^1.7",
+                "illuminate/macroable": "^8.83|^9.21|^10.0",
+                "laravel/legacy-factories": "^1.0",
+                "mockery/mockery": "^0.9|^1.0",
+                "nesbot/carbon": "^1.20|^2.0",
+                "phpunit/phpunit": "^4.8|^5.4|^6.1|^7.0|^8.0|^9.0|^10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/polyfill.php"
+                ],
+                "psr-4": {
+                    "Recca0120\\Repository\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "recca0120",
+                    "email": "recca0120@gmail.com"
+                }
+            ],
+            "description": "Repository for Laravel 5",
+            "keywords": [
+                "laravel",
+                "repository"
+            ],
+            "support": {
+                "issues": "https://github.com/recca0120/laravel-repository/issues",
+                "source": "https://github.com/recca0120/laravel-repository/tree/v2.6.2"
+            },
+            "time": "2023-02-15T12:39:33+00:00"
         },
         {
             "name": "symfony/console",
