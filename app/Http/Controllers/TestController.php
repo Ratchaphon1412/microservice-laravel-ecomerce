@@ -2,21 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Infrastructure\Domain\Repository\UserRepository;
 use App\Infrastructure\Kafka\Producer;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        //
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
+        $users = $this->userRepository->get();
 
         $message = Producer::produce("laravel", "Hello world");
 
-        return ["message" => $message];
+        return ["message" => $users];
     }
 
     /**
