@@ -3,8 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Infrastructure\Domain\Contract\UserInterface;
-use App\Infrastructure\Domain\Repository\UserRepository;
+use App\Repositories\Contracts\ProductRepository as ProductRepositoryContract;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,8 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
-        $this->app->singleton(UserInterface::class, UserRepository::class);
+        $this->app->singleton(ProductRepositoryContract::class, ProductRepository::class);
     }
 
     /**

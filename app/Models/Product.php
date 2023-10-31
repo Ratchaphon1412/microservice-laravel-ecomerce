@@ -20,4 +20,14 @@ class Product extends Model
     {
         return $this-> hasMany(ImageProduct ::class);
     }
+    protected $fillable = [
+        'name',
+        'description',
+        'color',
+        'size',
+        'price',
+        'category_type',
+        'gender'
+
+     ];
 }
