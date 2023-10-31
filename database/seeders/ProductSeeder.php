@@ -16,7 +16,6 @@ class ProductSeeder extends Seeder
         $product = new Product();
         $product->name = "TOTO";
         $product->description = "10 20 30 40";
-        $product->size = "XXXXXX";
         $product->price = 69.69;
         $product->category_type = "T-shirt";
         $product->gender = "men";

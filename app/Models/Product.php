@@ -12,10 +12,9 @@ class Product extends Model
 {
     use HasFactory;
 
-    public function colors():BelongsToMany{
-        return $this->belongsToMany(Color::class, 'product_color','product_id','color_id');
+    public function product_colors():hasMany{
+        return $this->hasMany(ProductColor::class);
     }
-
     public function images() : HasMany
     {
         return $this-> hasMany(ImageProduct ::class);
