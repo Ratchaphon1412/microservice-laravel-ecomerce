@@ -14,6 +14,7 @@ class ProductController extends Controller
     public function index() {
         return Product::get();
     }
+
     public function store(Request $request) {
         $request->validate([
             'name' => 'required|string|max:30',
@@ -34,9 +35,31 @@ class ProductController extends Controller
 
         return $product;
     }
+
+    public function update(Request $request, Product $product) {
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_type' => 'required|string|max:255',
+            'gender' => 'required|string|max:255',
+        ]);
+
+        $product->name = $request->get('name');
+        $product->description = $request->get('description');
+        $product->price = $request->get('price');
+        $product->category_type = $request->get('category_type');
+        $product->gender = $request->get('gender');
+        $product->save();
+        $product->refresh();
+
+        return $product;
+    }
+
     public function show(Product $product) {
         return Product::with('product_colors')->find($product->id);
     }
+
     public function destroy(Product $product) {
         $product->delete();
         return ['success' => 'delete this Product'];
@@ -64,6 +87,7 @@ class ProductController extends Controller
         return Product::with('product_colors')->find($product->id);
     }
 
+    // Get Stock of Product (All size)
     public function getStock(ProductColor $product_color) {
         return Stock::where('product_color_id', $product_color->id)->get();
     }
@@ -130,7 +154,7 @@ class ProductController extends Controller
         if ($stock->quantity < $request->get('quantity')) {
             return ['fail' => 'This product has not enough of quantity'];
         }
-        
+
         $stock->quantity -= $request->get('quantity');
         $stock->save();
         $stock->refresh();
