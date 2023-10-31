@@ -42,7 +42,7 @@ class ProductController extends Controller
         return ['success' => 'delete this Product'];
     }
 
-    // Add Color
+    // Add new Color of Product
     public function addColor(Request $request, Product $product) {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -64,6 +64,33 @@ class ProductController extends Controller
         return Product::with('product_colors')->find($product->id);
     }
 
+    public function getStock(ProductColor $product_color) {
+        return Stock::where('product_color_id', $product_color->id)->get();
+    }
+
+    // New Stock of Product
+    public function storeStock(Request $request, ProductColor $product_color) {
+        $request->validate([
+            'size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
+            'quantity' => 'required|numeric',
+        ]);
+
+        if (Stock::where('product_color_id', $product_color->id)
+        ->where('size', $request->get('size'))->exists()) {
+            return ['fail' => 'This product already has this size. You must update stock!'];
+        }
+
+        $stock = new Stock();
+        $stock->product_color_id = $product_color->id;
+        $stock->size = $request->get('size');
+        $stock->quantity = $request->get('quantity');
+        $stock->save();
+        $stock->refresh();
+
+        return $stock;
+    }
+
+    // Update quantity Stock of Product
     public function addStock(Request $request, ProductColor $product_color) {
         $request->validate([
             'size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
@@ -71,21 +98,42 @@ class ProductController extends Controller
         ]);
 
         if (!Stock::where('product_color_id', $product_color->id)
-            ->where('size', $request->get('size'))
-            ->exists()) {
-            $stock = new Stock();
-            $stock->product_color_id = $product_color->id;
-            $stock->size = $request->get('size');
-            $stock->quantity = $request->get('quantity');
-            $stock->save();
-            $stock->refresh();
-        } else {
-            $stock = Stock::where('product_color_id', $product_color->id)
-            ->where('size', $request->get('size'))->first();
-            $stock->quantity += $request->get('quantity');
-            $stock->save();
-            $stock->refresh();
+        ->where('size', $request->get('size'))->exists()) {
+            return ['fail' => 'This product has not this size.'];
         }
+
+        $stock = Stock::where('product_color_id', $product_color->id)
+            ->where('size', $request->get('size'))->first();
+
+        $stock->quantity += $request->get('quantity');
+        $stock->save();
+        $stock->refresh();
+
+        return $stock;
+    }
+
+    // Reduce quantity Stock of Product
+    public function reduceStock(Request $request, ProductColor $product_color) {
+        $request->validate([
+            'size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
+            'quantity' => 'required|numeric',
+        ]);
+
+        if (!Stock::where('product_color_id', $product_color->id)
+        ->where('size', $request->get('size'))->exists()) {
+            return ['fail' => 'This product has not this size.'];
+        }
+
+        $stock = Stock::where('product_color_id', $product_color->id)
+            ->where('size', $request->get('size'))->first();
+
+        if ($stock->quantity < $request->get('quantity')) {
+            return ['fail' => 'This product has not enough of quantity'];
+        }
+        
+        $stock->quantity -= $request->get('quantity');
+        $stock->save();
+        $stock->refresh();
 
         return $stock;
     }
