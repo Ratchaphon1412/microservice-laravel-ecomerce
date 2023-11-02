@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ImageProduct extends Model
 {
     use HasFactory;
-    public function product() : BelongsTo
+    public function products() : BelongsTo
     {
-        return $this->belongsTo(Product ::class);
-    }
-    public function getImagePath($value) {
-        
+        return $this->belongsTo(Product ::class,'image_products','product_id');
     }
 }
