@@ -15,7 +15,7 @@ class Product extends Model
     public function product_colors():hasMany{
         return $this->hasMany(ProductColor::class);
     }
-    public function images() : HasMany
+    public function image_products() : HasMany
     {
         return $this-> hasMany(ImageProduct ::class);
     }
