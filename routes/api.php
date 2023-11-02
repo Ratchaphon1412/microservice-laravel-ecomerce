@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\ProductController;
 |
 */
 Route::apiResource('/product', ProductController::class);
-
 Route::post('/product/add-color/{product}', [ProductController::class, 'addColor']);
 
 Route::get('/product/get-stock/{product_color}', [ProductController::class, 'getStock']);
