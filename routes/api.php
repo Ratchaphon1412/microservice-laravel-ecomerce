@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CouponController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
@@ -22,7 +23,7 @@ Route::post('/product/store-stock/{product_color}', [ProductController::class, '
 Route::put('/product/add-stock/{product_color}', [ProductController::class, 'addStock']);
 Route::put('/product/reduce-stock/{product_color}', [ProductController::class, 'reduceStock']);
 
-
+Route::apiResource('/coupon', CouponController::class);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
