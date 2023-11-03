@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ProductController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/product/format', [ProductController::class, 'format']);
 Route::apiResource('/product', ProductController::class);
 Route::post('/product/add-color/{product}', [ProductController::class, 'addColor']);
 
