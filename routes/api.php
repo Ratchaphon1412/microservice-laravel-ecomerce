@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ProductController;
 |
 */
 Route::get('/product/format', [ProductController::class, 'format']);
+Route::post('/product/filter', [ProductController::class, 'filter']);
 Route::apiResource('/product', ProductController::class);
 Route::post('/product/add-color/{product}', [ProductController::class, 'addColor']);
 

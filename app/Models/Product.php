@@ -18,6 +18,12 @@ class Product extends Model
     {
         return $this-> hasMany(ImageProduct ::class);
     }
+
+    public function searchableAs(): string
+    {
+        return 'products_index';
+    }
+
     protected $fillable = [
         'name',
         'description',
@@ -26,6 +32,5 @@ class Product extends Model
         'price',
         'category_type',
         'gender'
-
      ];
 }

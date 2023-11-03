@@ -230,5 +230,42 @@ class ProductController extends Controller
         return $filterList;
     }
 
-    
+    public function filter(Request $request){
+        return $request;
+        $products = Product::all();
+        $filterList = [];
+        $listSize = [];
+        $listColor = [];
+
+        foreach ($products as $product) {
+            foreach ($product->product_colors as $product_color) {
+                $hex_color = $product_color->color->hex_color;
+                if (!in_array($hex_color, $listColor)) {
+                    $listColor[] = $hex_color;
+                }
+            }
+            foreach ($product->product_colors as $product_color) {
+                foreach ($product_color->stocks as $stock) {
+                    $size = $stock->size;
+                    if (!in_array($size, $listSize)) {
+                        $listSize[] = $size;
+                    }
+                }
+            }
+                $filterList[] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'category' => $product->category_type,
+                    'gender' => $product->gender,
+                    'image' => $product->image_products[0]->image_path,
+                    'listColor' => $listColor,
+                    'listSize' => $listSize
+                ];
+                $listColor = [];
+                $listSize = [];
+        }
+        return $filterList;
+    }
 }
