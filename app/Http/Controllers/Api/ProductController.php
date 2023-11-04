@@ -8,6 +8,7 @@ use App\Models\ImageProduct;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\Stock;
+
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 
@@ -198,6 +199,7 @@ class ProductController extends Controller
         $filterList = [];
         $listSize = [];
         $listColor = [];
+        $status = "in" ;
 
         foreach ($products as $product) {
             foreach ($product->product_colors as $product_color) {
@@ -208,9 +210,15 @@ class ProductController extends Controller
             }
             foreach ($product->product_colors as $product_color) {
                 foreach ($product_color->stocks as $stock) {
+
                     $size = $stock->size;
+                    $qty =  intval($stock->quantity);
+                    
                     if (!in_array($size, $listSize)) {
-                        $listSize[] = $size;
+                        $listSize[] = [$size ,$qty ];
+                    }
+                    if($qty == 0){
+                        $status = "out";
                     }
                 }
             }
@@ -223,7 +231,9 @@ class ProductController extends Controller
                     'gender' => $product->gender,
                     'image' => $product->image_products[0]->image_path,
                     'listColor' => $listColor,
-                    'listSize' => $listSize
+                    'listSize' => $listSize,
+                    'updateTime' => $product->updated_at,
+                    'status' => $status
                 ];
                 $listColor = [];
                 $listSize = [];
