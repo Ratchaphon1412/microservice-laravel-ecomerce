@@ -32,5 +32,26 @@ class Product extends Model
         'price',
         'category_type',
         'gender'
-     ];
+    ];
+
+    public function scopeByColor($query, $color) {
+        return $query->whereHas('product_colors.color', function ($query) use ($color) {
+            $query->where('name', $color);
+        });
+    }
+
+    public function scopeBySize($query, $size) {
+        return $query->whereHas('product_colors.stocks', function ($query) use ($size) {
+            $query->where('size', $size)->where('quantity', '>', 0);
+        });
+    }
+
+    public function scopeByCost($query, $cost) {
+        return $query->where('price', $cost);
+    }
+     
+    public function scopeByCategory($query, $category) {
+        return $query->where('category_type', $category);
+    }
+
 }

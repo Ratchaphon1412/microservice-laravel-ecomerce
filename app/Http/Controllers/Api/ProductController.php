@@ -11,6 +11,8 @@ use App\Models\Stock;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 
+use function example\read;
+
 class ProductController extends Controller
 {
     public function index() {
@@ -26,6 +28,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'category_type' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
+            'material' => 'required|string|max:255',
             'color_list' => 'required|array',
             'color_list.*.name' => 'required|string|max:255',
             'color_list.*.hex_color' => 'required|string|max:7',
@@ -41,6 +44,7 @@ class ProductController extends Controller
         $product->name = $request->get('name');
         $product->description = $request->get('description');
         $product->price = $request->get('price');
+        $product->material = $request->get('material');
         $product->category_type = $request->get('category_type');
         $product->gender = $request->get('gender');
         $product->save();
@@ -97,6 +101,7 @@ class ProductController extends Controller
         $product->description = $request->get('description');
         $product->price = $request->get('price');
         $product->category_type = $request->get('category_type');
+        $product->material = $request->get('material');
         $product->gender = $request->get('gender');
         $product->save();
         $product->refresh();
@@ -225,6 +230,7 @@ class ProductController extends Controller
                     'listColor' => $listColor,
                     'listSize' => $listSize
                 ];
+
                 $listColor = [];
                 $listSize = [];
         }
@@ -232,16 +238,6 @@ class ProductController extends Controller
     }
 
     public function defineProduct(Product $product){
-        // $product_colors = ProductColor::where('product_id', $product->id)->get();
-        // foreach ($product_colors as $product_color) {
-        //     $color[] = Color::select(['id', 'name', 'hex_color'])->where('id', $product_color->color->id)->get();
-        //     $stock[] = Stock::select(['id', 'product_color_id', 'size', 'quantity'])->where('product_color_id', $product_color->id)->get();
-        // }
-        // return ["product" => Product::select(['id', 'name', 'description', 'price', 'category_type', 'gender'])->find($product->id), 
-        // "colors" => $color, 
-        // "stocks" => $stock, 
-        // "images" => ImageProduct::select(['id', 'product_id', 'image_path'])->where('product_id', $product->id)->get()];
-        
         $filterList = [];
         $listColor = [];
         $listImage = [];
@@ -271,7 +267,6 @@ class ProductController extends Controller
                         'category_type' => $product->category_type,
                         'description' => $product->description,
                         'price' => $product->price,
-                        'category' => $product->category_type,
                         'gender' => $product->gender,
                         'image' => $listImage,
                         'listColor' => $listColor,
@@ -280,50 +275,80 @@ class ProductController extends Controller
         return $filterList;
     }
     
-
-    public function filter(Request $request){
-        return [$request->selectedSize,$request->selectedColor,$request->cost];
-        $products = Product::all();
+    public function defineProductCard(Product $product){
         $filterList = [];
         $listSize = [];
-        $listColorName = [];
         $listColor = [];
 
-        foreach ($products as $product) {
-            foreach ($product->product_colors as $product_color) {
-                $name_color = $product_color->color->name;
-                $hex_color = $product_color->color->hex_color;
-                foreach($product_color->stocks as $stock){
-                    $size = $stock->size;
-                    $stock = $stock->quantity;
-                    if (!in_array($name_color, $listColor)) {
-                        $listColor[$name_color][] = [
-                            'hex_color' => $hex_color,
-                            'size' => $size,
-                            'stock' => $stock,
-                            'inStock' => true
-                        ];
-                    }              
+        
+        foreach ($product->product_colors as $product_color) {
+            $hex_color = $product_color->color->hex_color;
+            if (!in_array($hex_color, $listColor)) {
+                $listColor[] = $hex_color;
+            }
+        }
+        foreach ($product->product_colors as $product_color) {
+            foreach ($product_color->stocks as $stock) {
+                $size = $stock->size;
+                if (!in_array($size, $listSize)) {
+                    $listSize[] = $size;
                 }
             }
-                $filterList[] = [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'description' => $product->description,
-                    'price' => $product->price,
-                    'category' => $product->category_type,
-                    'gender' => $product->gender,
-                    'image' => $product->image_products[0]->image_path,
-                    'listColor' => $listColor,
-                    'listSize' => $listSize,
-                    'listColorName' => $listColorName
-                ];
-                $listColor = [];
-                $listSize = [];
-                $listColorName = [];
+        }
+        $filterList = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'category' => $product->category_type,
+            'gender' => $product->gender,
+            'image' => $product->image_products[0]->image_path,
+            'listColor' => $listColor,
+            'listSize' => $listSize
+        ];
+        return $filterList;
+    }
+
+    public function filter(Request $request){
+        // return [$request->selectedSize,$request->selectedColor,$request->cost];
+        $checkSize = false;
+        $checkColor = false;
+        $checkCost = false;
+        if($request->selectedSize !== null){
+            $checkSize = true;
+        }
+        if($request->selectedColor !== null){
+            $checkColor = true;
+        }
+        if($request->cost !== 0){
+            $checkCost = true;
+        }
+        // return [$checkSize,$checkColor,$checkCost];
+        if($checkSize && $checkColor && $checkCost){
+            $products = Product::byColor($request->selectedColor)->bySize($request->selectedSize)->byCost($request->cost)->get();
+        }
+        else if($checkColor && $checkSize){
+            $products = Product::byColor($request->selectedColor)->bySize($request->selectedSize)->get();
+        }
+        else if($checkColor && $checkCost){
+            $products = Product::byColor($request->selectedColor)->byCost($request->cost)->get();
+        }
+        else if($checkSize && $checkCost){
+            $products = Product::bySize($request->selectedSize)->byCost($request->cost)->get();
+        }
+        else if($checkSize){
+            $products = Product::bySize($request->selectedSize)->get();
+        }
+        else if($checkColor){
+            $products = Product::byColor($request->selectedColor)->get();
+        }
+        else if($checkCost){
+            $products = Product::byCost($request->cost)->get();
+        }
+
+        foreach($products as $product){
+            $filterList[] = $this->defineProductCard($product);
         }
         return $filterList;
-        
-        // return $filterList[0]->listColorName[0];
     }
 }
