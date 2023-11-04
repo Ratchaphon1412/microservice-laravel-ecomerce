@@ -52,7 +52,7 @@ class User extends Authenticatable
         return $this-> hasMany(Address::class);
     }
     public function coupons():BelongsToMany{
-        return $this->belongsToMany(Color::class, 'product_color','product_id','color_id');
+        return $this->belongsToMany(Coupon::class, 'history_coupons','user_id','coupon_id');
     }
 
 }
