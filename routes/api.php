@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ProductController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/product/defineProduct/{product}', [ProductController::class, 'defineProduct']);
 Route::get('/product/format', [ProductController::class, 'format']);
 Route::post('/product/filter', [ProductController::class, 'filter']);
 Route::apiResource('/product', ProductController::class);
