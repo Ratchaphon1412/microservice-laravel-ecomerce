@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
+            $table->enum('type', ['Percent', 'Number']);
             $table->integer('discount');
+            $table->string('code')->unique();
+            $table->date('expire_date');
+            $table->integer('limit_coupon');
             $table->timestamps();
             $table->softDeletes(); //'deleted_at' timestamp nullable
         });
