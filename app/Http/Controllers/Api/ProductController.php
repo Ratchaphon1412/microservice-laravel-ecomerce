@@ -15,6 +15,7 @@ use function example\read;
 
 class ProductController extends Controller
 {
+    
     public function index() {
         return Product::with('image_products')
         ->with('product_colors.color')
@@ -49,6 +50,7 @@ class ProductController extends Controller
         $product->gender = $request->get('gender');
         $product->save();
         $product->refresh();
+
 
         // Create Color
         $color_list = $request->get('color_list');
@@ -89,14 +91,23 @@ class ProductController extends Controller
     }
 
     public function update(Request $request, Product $product) {
+        // return $request->all();
         $request->validate([
             'name' => 'required|string|max:30',
             'description' => 'required|string',
+            'material' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category_type' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
+            'color_list' => 'required|array',
+            'color_list.*.name' => 'required|string|max:255',
+            'color_list.*.hex_color' => 'required|string|max:7',
+            'color_list.*.stock' => 'required|array',
+            'color_list.*.stock.*.size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
+            'color_list.*.stock.*.quantity' => 'required|numeric',
+            'image_list' => 'required|array',
+            'image_list.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
         $product->name = $request->get('name');
         $product->description = $request->get('description');
         $product->price = $request->get('price');
@@ -106,14 +117,58 @@ class ProductController extends Controller
         $product->save();
         $product->refresh();
 
+        $color_list = $request->get('color_list');
+        foreach($color_list as $color){
+            if(Color::where('hex_color',$color['hex_color'])->exists()){
+                continue;
+            }
+            else{
+                $new_color = new Color();
+                $new_color->name = $color['name'];
+                $new_color->hex_color = $color['hex_color'];
+                $new_color->save();
+                $new_color->refresh();
+                $product_color = new ProductColor();
+                $product_color->product_id = $product->id;
+                $product_color->color_id = $new_color->id;
+                $product_color->save();
+                $product_color->refresh();
+                // Stock of Product with Color
+                foreach ($color['stock'] as $stock) {
+                    if($stock['quantity'] == 0){
+                        continue;
+                    }
+                    $new_stock = new Stock();
+                    $new_stock->product_color_id = $product_color->id;
+                    $new_stock->size = $stock['size'];
+                    $new_stock->quantity = $stock['quantity'];
+                    $new_stock->save();
+                    $new_stock->refresh();
+                }
+            }
+        }
+        $image_list = $request->file('image_list');
+        foreach ($image_list as $file) {
+            $file->storeAs('products/images',  $file->getClientOriginalName(), 'public');
+            $image = new ImageProduct();
+            $image->product_id = $product->id;
+            $image->image_path = 'http://localhost/storage/products/images/'.$file->getClientOriginalName();
+            $image->save();
+            $image->refresh();
+        }
+
+        // updateColor
+
         return $product;
     }
+
     public function show(Product $product) {
         return Product::with('image_products')
             ->with('product_colors.color')
             ->with('product_colors.stocks')
             ->find($product->id);
     }
+
     public function destroy(Product $product) {
         $product->delete();
         return ['success' => 'delete this Product'];
@@ -256,7 +311,7 @@ class ProductController extends Controller
                         'hex_color' => $hex_color,
                         'size' => $size,
                         'stock' => $stock,
-                        'inStock' => true
+                        'inStock' => $stock > 0 ? true : false
                     ];
                 }              
             }
@@ -266,6 +321,7 @@ class ProductController extends Controller
                         'name' => $product->name,
                         'category_type' => $product->category_type,
                         'description' => $product->description,
+                        'material' => $product->material,
                         'price' => $product->price,
                         'gender' => $product->gender,
                         'image' => $listImage,
@@ -299,6 +355,7 @@ class ProductController extends Controller
             'id' => $product->id,
             'name' => $product->name,
             'description' => $product->description,
+            'material' => $product->material,
             'price' => $product->price,
             'category' => $product->category_type,
             'gender' => $product->gender,
