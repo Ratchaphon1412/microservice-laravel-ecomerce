@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->string('material');
             $table->double('price');
             $table->string('category_type');
-            $table->string('gender');
+            $table->enum('gender',['Men','Women','Kids','Unisex']);
             $table->timestamps();
         });
     }

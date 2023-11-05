@@ -17,8 +17,11 @@ Route::get('/product/format',[ProductController::class, 'format']);
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/product/defineProduct/{product}', [ProductController::class, 'defineProduct']);
 Route::get('/product/format', [ProductController::class, 'format']);
+Route::post('/product/filter', [ProductController::class, 'filter']);
 Route::apiResource('/product', ProductController::class);
+Route::post('/product/update/{product}', [ProductController::class, 'update']);
 Route::apiResource('/address', AddressController::class);
 Route::post('/product/add-color/{product}', [ProductController::class, 'addColor']);
 Route::get('/product/get-stock/{product_color}', [ProductController::class, 'getStock']);
