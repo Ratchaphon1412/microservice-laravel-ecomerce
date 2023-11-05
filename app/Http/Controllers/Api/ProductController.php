@@ -505,6 +505,7 @@ class ProductController extends Controller
             $products = Product::byCost($request->cost)->get();
         }
 
+        $filterList = [];
         foreach($products as $product){
             $filterList[] = $this->defineProductCard($product);
         }
