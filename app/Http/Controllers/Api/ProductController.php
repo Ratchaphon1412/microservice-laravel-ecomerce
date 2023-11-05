@@ -137,7 +137,6 @@ class ProductController extends Controller
                     $colorFound = true;
                     break; // No need to continue checking if the color is found
                 }
-                
             }
             if (!$colorFound) {
                 // The color was not found in $new_color_list, so we can delete it from the database
@@ -159,7 +158,6 @@ class ProductController extends Controller
                     break; // Color already exists in $sort_color_list
                 }
             }
-        
             if (!$colorFound) {
                 // Add the new color to $sort_color_list
                 $newColor = new Color();
@@ -171,10 +169,13 @@ class ProductController extends Controller
                 $product_color = new ProductColor();
                 $product_color->product_id = $product->id;
                 $product_color->color_id = $newColor->id;
-                
                 $product_color->save();
                 $product_color->refresh();
+
                 foreach ($new_color['stock'] as $stock) {
+                    if($stock['quantity'] == 0){
+                        continue;
+                    }
                     $new_stock = new Stock();
                     $new_stock->product_color_id = $product_color->id;
                     $new_stock->size = $stock['size'];
@@ -182,41 +183,12 @@ class ProductController extends Controller
                     $new_stock->save();
                     $new_stock->refresh();
                 }
-
                 $sort_color_list[] = $new_color;
             }
         }
         return $sort_color_list;
-        // foreach($sort_color_list as $color){
-        //     // return Color::where('hex_color',$color['hex_color'])->exists();
-        //     if(Color::where('hex_color',$color['hex_color'])->exists()){
-        //         continue;
-        //     }
-        //     else{
-        //         $new_color = new Color();
-        //         $new_color->name = $color['name'];
-        //         $new_color->hex_color = $color['hex_color'];
-        //         $new_color->save();
-        //         $new_color->refresh();
-        //         $product_color = new ProductColor();
-        //         $product_color->product_id = $product->id;
-        //         $product_color->color_id = $new_color->id;
-        //         $product_color->save();
-        //         $product_color->refresh();
-        //         // Stock of Product with Color
-        //         foreach ($color['stock'] as $stock) {
-        //             if($stock['quantity'] == 0){
-        //                 continue;
-        //             }
-        //             $new_stock = new Stock();
-        //             $new_stock->product_color_id = $product_color->id;
-        //             $new_stock->size = $stock['size'];
-        //             $new_stock->quantity = $stock['quantity'];
-        //             $new_stock->save();
-        //             $new_stock->refresh();
-        //         }
-        //     }
-        // }
+        
+        // updateImage
         $image_list = $request->file('image_list');
         foreach ($image_list as $file) {
             $image_list = ImageProduct::where('product_id',$product->id)->get();
@@ -242,24 +214,8 @@ class ProductController extends Controller
             ->find($product->id);
     }
 
-
-
-
     public function destroy(Product $product) {
-        $color_product = ProductColor::where('product_id',$product->id)->get();
-        foreach($color_product as $list){
-            $color_list = Color::where('id',$list->color_id)->get();
-            $stock_list = Stock::where('product_color_id',$list->id)->get();
-            foreach($color_list as $color){
-                $color->delete();
-            }
-            foreach($stock_list as $stock){
-                $stock->delete();
-            }
-            $list->delete();
-        }
         $product->delete();
-        return ['success' => 'delete this Product'];
     }
 
 
@@ -364,8 +320,8 @@ class ProductController extends Controller
                     $qty =  intval($stock->quantity);
                     
                     if (!in_array($size, $listSize)) {
-                        $listSize[] = [$size];
-                        $listQty[] = [$qty];
+                        $listSize[] = $size;
+                        $listQty[] = $qty;
                     }
                     if($qty == 0){
                         $status = "out";
@@ -380,6 +336,7 @@ class ProductController extends Controller
                     'category' => $product->category_type,
                     'gender' => $product->gender,
                     'image' => $product->image_products[0]->image_path,
+                    'listQty' => $listQty,
                     'listColor' => $listColor,
                     'listSize' => $listSize,
                     'updateTime' => $product->updated_at,
