@@ -106,8 +106,8 @@ class ProductController extends Controller
             'color_list.*.stock' => 'required|array',
             'color_list.*.stock.*.size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
             'color_list.*.stock.*.quantity' => 'required|numeric',
-            'image_list' => 'required|array',
-            'image_list.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'image_list' => 'required|array',
+            // 'image_list.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         $product->name = $request->get('name');
         $product->description = $request->get('description');
@@ -118,27 +118,63 @@ class ProductController extends Controller
         $product->save();
         $product->refresh();
 
-        $color_list = $request->get('color_list');
-        foreach($color_list as $color){
-            if(Color::where('hex_color',$color['hex_color'])->exists()){
-                continue;
+        // updateColor
+        $colorInProduct = ProductColor::where('product_id',$product->id)->get();
+        $old_color_list = [];
+
+
+
+        foreach($colorInProduct as $color){
+            $old_color_list[] = Color::where('id',$color->color_id)->first();
+        }
+        $new_color_list = $request->get('color_list');
+        $sort_color_list = [];
+
+        foreach ($old_color_list as $old_color) {
+            $colorFound = false;
+            foreach ($new_color_list as $new_color) {
+                if ($old_color->hex_color == $new_color['hex_color']) {
+                    $colorFound = true;
+                    break; // No need to continue checking if the color is found
+                }
+                
             }
-            else{
-                $new_color = new Color();
-                $new_color->name = $color['name'];
-                $new_color->hex_color = $color['hex_color'];
-                $new_color->save();
-                $new_color->refresh();
+            if (!$colorFound) {
+                // The color was not found in $new_color_list, so we can delete it from the database
+                $colorInProduct_delete = ProductColor::where('product_id',$product->id)->where('color_id',$old_color->id)->first();
+                $colorInProduct_delete->delete();
+                $old_color->delete();
+            }
+            else
+            {
+                $sort_color_list[] = $old_color;
+            }
+        }
+        // return $sort_color_list;
+        foreach ($new_color_list as $new_color) {
+            $colorFound = false;
+            foreach ($sort_color_list as $existing_color) {
+                if ($existing_color['hex_color'] == $new_color['hex_color']) {
+                    $colorFound = true;
+                    break; // Color already exists in $sort_color_list
+                }
+            }
+        
+            if (!$colorFound) {
+                // Add the new color to $sort_color_list
+                $newColor = new Color();
+                $newColor->name = $new_color['name'];
+                $newColor->hex_color = $new_color['hex_color'];
+                $newColor->save();
+                $newColor->refresh();
+                
                 $product_color = new ProductColor();
                 $product_color->product_id = $product->id;
-                $product_color->color_id = $new_color->id;
+                $product_color->color_id = $newColor->id;
+                
                 $product_color->save();
                 $product_color->refresh();
-                // Stock of Product with Color
-                foreach ($color['stock'] as $stock) {
-                    if($stock['quantity'] == 0){
-                        continue;
-                    }
+                foreach ($new_color['stock'] as $stock) {
                     $new_stock = new Stock();
                     $new_stock->product_color_id = $product_color->id;
                     $new_stock->size = $stock['size'];
@@ -146,10 +182,49 @@ class ProductController extends Controller
                     $new_stock->save();
                     $new_stock->refresh();
                 }
+
+                $sort_color_list[] = $new_color;
             }
         }
+        return $sort_color_list;
+        // foreach($sort_color_list as $color){
+        //     // return Color::where('hex_color',$color['hex_color'])->exists();
+        //     if(Color::where('hex_color',$color['hex_color'])->exists()){
+        //         continue;
+        //     }
+        //     else{
+        //         $new_color = new Color();
+        //         $new_color->name = $color['name'];
+        //         $new_color->hex_color = $color['hex_color'];
+        //         $new_color->save();
+        //         $new_color->refresh();
+        //         $product_color = new ProductColor();
+        //         $product_color->product_id = $product->id;
+        //         $product_color->color_id = $new_color->id;
+        //         $product_color->save();
+        //         $product_color->refresh();
+        //         // Stock of Product with Color
+        //         foreach ($color['stock'] as $stock) {
+        //             if($stock['quantity'] == 0){
+        //                 continue;
+        //             }
+        //             $new_stock = new Stock();
+        //             $new_stock->product_color_id = $product_color->id;
+        //             $new_stock->size = $stock['size'];
+        //             $new_stock->quantity = $stock['quantity'];
+        //             $new_stock->save();
+        //             $new_stock->refresh();
+        //         }
+        //     }
+        // }
         $image_list = $request->file('image_list');
         foreach ($image_list as $file) {
+            $image_list = ImageProduct::where('product_id',$product->id)->get();
+            if($image_list->image_products !== null){
+                foreach($image_list as $image){
+                    $image->delete();
+                }
+            }
             $file->storeAs('products/images',  $file->getClientOriginalName(), 'public');
             $image = new ImageProduct();
             $image->product_id = $product->id;
@@ -157,9 +232,6 @@ class ProductController extends Controller
             $image->save();
             $image->refresh();
         }
-
-        // updateColor
-
         return $product;
     }
 
@@ -170,10 +242,27 @@ class ProductController extends Controller
             ->find($product->id);
     }
 
+
+
+
     public function destroy(Product $product) {
+        $color_product = ProductColor::where('product_id',$product->id)->get();
+        foreach($color_product as $list){
+            $color_list = Color::where('id',$list->color_id)->get();
+            $stock_list = Stock::where('product_color_id',$list->id)->get();
+            foreach($color_list as $color){
+                $color->delete();
+            }
+            foreach($stock_list as $stock){
+                $stock->delete();
+            }
+            $list->delete();
+        }
         $product->delete();
         return ['success' => 'delete this Product'];
     }
+
+
 
     // Add Color
     public function addColor(Request $request, Product $product) {
@@ -259,6 +348,7 @@ class ProductController extends Controller
         $filterList = [];
         $listSize = [];
         $listColor = [];
+        $listQty = [];
         $status = "in" ;
 
         foreach ($products as $product) {
@@ -270,12 +360,12 @@ class ProductController extends Controller
             }
             foreach ($product->product_colors as $product_color) {
                 foreach ($product_color->stocks as $stock) {
-
                     $size = $stock->size;
                     $qty =  intval($stock->quantity);
                     
                     if (!in_array($size, $listSize)) {
-                        $listSize[] = [$size ,$qty ];
+                        $listSize[] = [$size];
+                        $listQty[] = [$qty];
                     }
                     if($qty == 0){
                         $status = "out";
@@ -298,6 +388,8 @@ class ProductController extends Controller
 
                 $listColor = [];
                 $listSize = [];
+
+                $status = "in" ;
         }
         return $filterList;
     }
