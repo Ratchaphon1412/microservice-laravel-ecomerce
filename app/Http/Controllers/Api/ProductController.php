@@ -106,8 +106,10 @@ class ProductController extends Controller
             'color_list.*.stock' => 'required|array',
             'color_list.*.stock.*.size' => 'required|in:XXS,XS,S,M,L,XL,2XL,3XL',
             'color_list.*.stock.*.quantity' => 'required|numeric',
-            // 'image_list' => 'required|array',
-            // 'image_list.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'delete_image_list' => 'array',
+            'delete_image_list.*.' => 'string',
+            'image_list' => 'array',
+            'image_list.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         $product->name = $request->get('name');
         $product->description = $request->get('description');
@@ -186,25 +188,32 @@ class ProductController extends Controller
                 $sort_color_list[] = $new_color;
             }
         }
-        return $sort_color_list;
-        
-        // updateImage
-        $image_list = $request->file('image_list');
-        foreach ($image_list as $file) {
-            $image_list = ImageProduct::where('product_id',$product->id)->get();
-            if($image_list->image_products !== null){
-                foreach($image_list as $image){
-                    $image->delete();
-                }
+
+        // delete image
+        $deleteImages = $request->get('delete_image_list');
+        if ($deleteImages) {
+            foreach ($deleteImages as $image_path) {
+                $product_image = ImageProduct::where('product_id', $product->id)->where('image_path', $image_path)->first();
+                $product_image->delete();
             }
-            $file->storeAs('products/images',  $file->getClientOriginalName(), 'public');
-            $image = new ImageProduct();
-            $image->product_id = $product->id;
-            $image->image_path = 'http://localhost/storage/products/images/'.$file->getClientOriginalName();
-            $image->save();
-            $image->refresh();
         }
-        return $product;
+
+        // add image
+        $image_list = $request->file('image_list');
+        if ($image_list) {
+            foreach ($image_list as $file) {
+                $file->storeAs('products/images',  $file->getClientOriginalName(), 'public');
+                $image = new ImageProduct();
+                $image->product_id = $product->id;
+                $image->image_path = 'http://localhost/storage/products/images/'.$file->getClientOriginalName();
+                $image->save();
+                $image->refresh();
+            }
+        }
+        return Product::with('image_products')
+        ->with('product_colors.color')
+        ->with('product_colors.stocks')
+        ->find($product->id);
     }
 
     public function show(Product $product) {
