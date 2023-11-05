@@ -57,7 +57,15 @@ class Product extends Model
     }
 
     public function scopeByCost($query, $cost) {
-        return $query->where('price', $cost);
+        if ($cost === 500) {
+            return $query->where('price', '<', $cost);
+        } else if ($cost === 999) {
+            return $query->where('price', '>=', 500)->where('price', '<=', $cost);
+        } else if ($cost === 1000) {
+            return $query->where('price', '>=', $cost);
+        } else {
+            return false;
+        }
     }
      
     public function scopeByCategory($query, $category) {
