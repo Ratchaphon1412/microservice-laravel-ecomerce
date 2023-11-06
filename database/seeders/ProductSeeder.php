@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $category_type = ["TOPS","บ้านแฝด","ทาวน์เฮาส์"];
+        $category_type = ["Tops, Outerwear, Bottoms"];
         $gender = ['Men','Women','Kids','Unisex'];
         $size =['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -41,7 +41,7 @@ class ProductSeeder extends Seeder
             $product->gender = $gender[array_rand($gender)];
             $product->save();
 
-            
+
             $image = new ImageProduct();
             $image->product_id = $product->id;
             $image->image_path = 'http://localhost/storage/products/images/รูปภาพในวันที่ 18-9-66 เวลา 12.06.jpeg';

@@ -85,10 +85,10 @@ class ProductController extends Controller
             $image->save();
             $image->refresh();
         }
-        return Product::with('image_products')
-            ->with('product_colors.color')
-            ->with('product_colors.stocks')
-            ->find($product->id);
+        return response()->json(Product::with('image_products')
+         ->with('product_colors.color')
+         ->with('product_colors.stocks')
+         ->find($product->id), 201);
     }
 
     public function update(Request $request, Product $product) {
