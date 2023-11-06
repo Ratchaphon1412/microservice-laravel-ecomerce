@@ -17,5 +17,17 @@ class ColorSeeder extends Seeder
         $color->name = "Purple";
         $color->hex_color = "#7752FE";
         $color->save();
+        $color = new Color();
+        $color->name = "Green";
+        $color->hex_color = "#008000";
+        $color->save();
+        $color = new Color();
+        $color->name = "Pink";
+        $color->hex_color = "#FFC0CB";
+        $color->save();
+        $color = new Color();
+        $color->name = "Black";
+        $color->hex_color = "#000000";
+        $color->save();
     }
 }
