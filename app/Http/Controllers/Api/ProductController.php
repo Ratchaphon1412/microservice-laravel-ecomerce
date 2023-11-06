@@ -45,7 +45,7 @@ class ProductController extends Controller
         $product = new Product();
         $product->name = $request->get('name');
         $product->description = $request->get('description');
-        $product->price = $request->get('price');
+        $product->price = (int) $request->get('price');
         $product->material = $request->get('material');
         $product->category_type = $request->get('category_type');
         $product->gender = $request->get('gender');
@@ -71,7 +71,7 @@ class ProductController extends Controller
                 $new_stock = new Stock();
                 $new_stock->product_color_id = $product_color->id;
                 $new_stock->size = $stock['size'];
-                $new_stock->quantity = $stock['quantity'];
+                $new_stock->quantity = (int) $stock['quantity'];
                 $new_stock->save();
                 $new_stock->refresh();
             }
@@ -85,10 +85,10 @@ class ProductController extends Controller
             $image->save();
             $image->refresh();
         }
-        return Product::with('image_products')
-            ->with('product_colors.color')
-            ->with('product_colors.stocks')
-            ->find($product->id);
+        return response()->json(Product::with('image_products')
+         ->with('product_colors.color')
+         ->with('product_colors.stocks')
+         ->find($product->id), 201);
     }
 
     public function update(Request $request, Product $product) {
@@ -181,12 +181,33 @@ class ProductController extends Controller
                     $new_stock = new Stock();
                     $new_stock->product_color_id = $product_color->id;
                     $new_stock->size = $stock['size'];
-                    $new_stock->quantity = $stock['quantity'];
+                    $new_stock->quantity = (int) $stock['quantity'];
                     $new_stock->save();
                     $new_stock->refresh();
                 }
                 $sort_color_list[] = $new_color;
+            } else {
+                foreach ($new_color['stock'] as $stock) {
+                    if($stock['quantity'] == 0){
+                        continue;
+                    }
+                    $temp = ProductColor::byColor($new_color['name'])->where('product_id', $product->id)->first();
+                    if ($temp->stocks()->where('size', $stock['size'])->exists()) {
+                        $s = $temp->stocks()->where('size', $stock['size'])->first();
+                        $s->quantity = (int) $stock['quantity'];
+                        $s->save();
+                        $s->refresh();
+                    } else {
+                        $new_stock = new Stock();
+                        $new_stock->product_color_id = $temp->id;
+                        $new_stock->size = $stock['size'];
+                        $new_stock->quantity = $stock['quantity'];
+                        $new_stock->save();
+                        $new_stock->refresh();
+                    }
+                }
             }
+            return $product;
         }
 
         // delete image
@@ -225,6 +246,16 @@ class ProductController extends Controller
 
     public function destroy(Product $product) {
         $product->delete();
+        $product->image_products()->delete();
+
+        $product_colors = ProductColor::where('product_id', $product->id)->get();
+        foreach ($product_colors as $pc) {
+            $pc->color()->delete();
+            $pc->stocks()->delete();
+            $pc->delete();
+        }
+
+        return ['Success' => 'This product ir removed.'];
     }
 
 

@@ -12,6 +12,6 @@ class ProductColorSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+       
     }
 }

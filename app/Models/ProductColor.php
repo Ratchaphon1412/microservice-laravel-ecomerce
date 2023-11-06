@@ -17,4 +17,9 @@ class ProductColor extends Model
     public function stocks() {
         return $this->hasMany(Stock::class);
     }
+    public function scopeByColor($query, $color) {
+        return $query->whereHas('color', function ($query) use ($color) {
+            $query->where('name', $color);
+        });
+    }
 }
