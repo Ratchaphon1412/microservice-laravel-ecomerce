@@ -508,4 +508,27 @@ class ProductController extends Controller
         }
         return $filterList;
     }
+
+    public function searchGenderCategory(Request $request) {
+        if ($request->gender === "All") {
+            if ($request->category === "All") {
+                $products = Product::get();
+            } else {
+                $products = Product::where("category_type", $request->category)->get();
+            }
+        } else {
+            $product_genders = Product::where('gender', $request->gender);
+            if ($request->category === "All") {
+                $products = $product_genders->get();
+            } else {
+                $products = $product_genders->where("category_type", $request->category)->get();
+            }
+        }
+
+        $filterList = [];
+        foreach($products as $product){
+            $filterList[] = $this->defineProductCard($product);
+        }
+        return $filterList;
+    }
 }

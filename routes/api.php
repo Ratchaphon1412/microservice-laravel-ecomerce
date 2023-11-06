@@ -20,12 +20,12 @@ Route::get('/product/format',[ProductController::class, 'format']);
 */
 Route::controller(SearchController::class)->group(function (){
     Route::post('/search', 'search')->name('search.search');
-
 });
 
 Route::get('/product/defineProduct/{product}', [ProductController::class, 'defineProduct']);
 Route::get('/product/format', [ProductController::class, 'format']);
 Route::post('/product/filter', [ProductController::class, 'filter']);
+Route::post('/product/gender-category', [ProductController::class, 'searchGenderCategory']);
 Route::apiResource('/product', ProductController::class);
 Route::post('/product/update/{product}', [ProductController::class, 'update']);
 Route::apiResource('/address', AddressController::class);
