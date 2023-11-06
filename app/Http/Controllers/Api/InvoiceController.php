@@ -75,7 +75,7 @@ class InvoiceController extends Controller
             ->currencyFormat('{SYMBOL}{VALUE}')
             ->currencyThousandsSeparator('.')
             ->currencyDecimalPoint(',')
-            ->filename($client->name . ' ' . $customer->name . time())
+            ->filename(time())
             ->addItems($items)
             ->notes($notes)
             ->logo(public_path('vendor/invoices/sample-logo.png'))
