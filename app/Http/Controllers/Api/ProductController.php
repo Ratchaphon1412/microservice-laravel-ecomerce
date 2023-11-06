@@ -313,7 +313,7 @@ class ProductController extends Controller
         $filterList = [];
         $listSize = [];
         $listColor = [];
-        $listQty = [];
+        $qtySum = 0;
         $status = "in" ;
 
         foreach ($products as $product) {
@@ -330,7 +330,7 @@ class ProductController extends Controller
                     
                     if (!in_array($size, $listSize)) {
                         $listSize[] = $size;
-                        $listQty[] = $qty;
+                        $qtySum = $qtySum + $qty;
                     }
                     if($qty == 0){
                         $status = "out";
@@ -345,7 +345,7 @@ class ProductController extends Controller
                     'category' => $product->category_type,
                     'gender' => $product->gender,
                     'image' => $product->image_products[0]->image_path,
-                    'listQty' => $listQty,
+                    'qtySum' => $qtySum,
                     'listColor' => $listColor,
                     'listSize' => $listSize,
                     'updateTime' => $product->updated_at,
@@ -403,7 +403,6 @@ class ProductController extends Controller
         $filterList = [];
         $listSize = [];
         $listColor = [];
-
         
         foreach ($product->product_colors as $product_color) {
             $hex_color = $product_color->color->hex_color;
