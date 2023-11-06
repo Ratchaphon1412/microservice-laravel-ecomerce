@@ -22,4 +22,6 @@ class ProductColor extends Model
             $query->where('name', $color);
         });
     }
+    
+    
 }
