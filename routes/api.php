@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SearchController;
 
 Route::get('/product/format',[ProductController::class, 'format']);
 /*
@@ -17,6 +18,11 @@ Route::get('/product/format',[ProductController::class, 'format']);
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::controller(SearchController::class)->group(function (){
+    Route::post('/search', 'search')->name('search.search');
+
+});
+
 Route::get('/product/defineProduct/{product}', [ProductController::class, 'defineProduct']);
 Route::get('/product/format', [ProductController::class, 'format']);
 Route::post('/product/filter', [ProductController::class, 'filter']);
