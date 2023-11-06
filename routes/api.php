@@ -28,7 +28,6 @@ Route::post('/product/add-color/{product}', [ProductController::class, 'addColor
 Route::get('/product/get-stock/{product_color}', [ProductController::class, 'getStock']);
 Route::post('/product/store-stock/{product_color}', [ProductController::class, 'storeStock']);
 Route::put('/product/add-stock/{product_color}', [ProductController::class, 'addStock']);
-Route::put('/product/reduce-stock/{product_color}', [ProductController::class, 'reduceStock']);
 
 Route::apiResource('/coupon', CouponController::class);
 Route::post('/invoice', [InvoiceController::class, 'invoice']);
