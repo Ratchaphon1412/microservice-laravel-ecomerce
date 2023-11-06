@@ -6,13 +6,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "algolia/algoliasearch-client-php": "^3.4",
         "guzzlehttp/guzzle": "^7.2",
+        "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/scout": "^10.5",
         "laravel/tinker": "^2.8",
         "laraveldaily/laravel-invoices": "^3.0",
         "mateusjunges/laravel-kafka": "^1.13",
+        "meilisearch/meilisearch-php": "^1.4",
         "recca0120/repository": "^2.6"
     },
     "require-dev": {
