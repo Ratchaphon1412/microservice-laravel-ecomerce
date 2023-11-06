@@ -79,7 +79,6 @@ class InvoiceController extends Controller
             ->save('public');
 
         $link = $invoice->url();
-        return $invoice->total_amount;
         $response = Http::post('http://microservice.payment.ratchaphon1412.co/api/v1/payment/invoice/', [
             'user_id' => $request->get('user_id'),
             'amount' => $invoice->total_amount,
