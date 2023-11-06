@@ -12,12 +12,12 @@ class Product extends Model
 {
     use HasFactory;
 
-    public function product_colors():hasMany{
+    public function product_colors() : HasMany{
         return $this->hasMany(ProductColor::class);
     }
     public function image_products() : HasMany
     {
-        return $this-> hasMany(ImageProduct ::class);
+        return $this->hasMany(ImageProduct::class);
     }
 
     public function searchableAs(): string
