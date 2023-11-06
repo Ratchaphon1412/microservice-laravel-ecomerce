@@ -21,5 +21,14 @@ class UserSeeder extends Seeder
         $user->gender="men";
         $user->password = "password";
         $user->save();
+    
+        $user = new User();
+        $user->email = "tae@gmail.com";
+        $user->fullname = "toto zaza";
+        $user->phoneNumber = "0618204866";
+        $user->birthdate = fake()->dateTimeBetween('-1000000 days','-900000 days');;
+        $user->gender="men";
+        $user->password = "password";
+        $user->save();
     }
 }
