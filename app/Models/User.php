@@ -4,9 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+
+
 
 class User extends Authenticatable
 {
@@ -42,4 +46,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function addresses() : HasMany{
+        
+        return $this-> hasMany(Address::class);
+    }
+    public function coupons():BelongsToMany{
+        return $this->belongsToMany(Coupon::class, 'history_coupons','user_id','coupon_id');
+    }
+
 }
