@@ -25,7 +25,7 @@ class ProductController extends Controller
     }
     public function store(Request $request) {
         $request->validate([
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_type' => 'required|string|max:255',
@@ -94,7 +94,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product) {
         // return $request->all();
         $request->validate([
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:255',
             'description' => 'required|string',
             'material' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -360,8 +360,10 @@ class ProductController extends Controller
                     $qty =  intval($stock->quantity);
                     
                     if (!in_array($size, $listSize)) {
-                        $listSize[] = $size;
-                        $qtySum = $qtySum + $qty;
+                        if($qty > 0){
+                            $listSize[] = $size;
+                            $qtySum = $qtySum + $qty;
+                        }
                     }
                     if($qty == 0){
                         $status = "out";
@@ -444,7 +446,11 @@ class ProductController extends Controller
         foreach ($product->product_colors as $product_color) {
             foreach ($product_color->stocks as $stock) {
                 $size = $stock->size;
+                $qty = intval($stock->quantity);
                 if (!in_array($size, $listSize)) {
+                    if($qty > 0){
+                        $listSize[] = $size;
+                    }
                     $listSize[] = $size;
                 }
             }

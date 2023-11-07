@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('material');
             $table->double('price');
             $table->enum('category_type',['TOPS','Outerwear','BOTTOMS']);;
-            $table->enum('gender',['Men','Women','Kids']);
+            $table->enum('gender',['Men','Women','Kids','Unisex']);
             $table->timestamps();
         });
     }
