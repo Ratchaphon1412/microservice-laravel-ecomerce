@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $category_type = ["Tops, Outerwear, Bottoms"];
+        $category_type = ["Tops", "Outerwear", "Bottoms"];
         $gender = ['Men','Women','Kids','Unisex'];
         $size =['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -35,15 +35,15 @@ class ProductSeeder extends Seeder
 
             $image = new ImageProduct();
             $image->product_id = $product->id;
-            $image->image_path = 'http://localhost/storage/products/images/123123.jpeg';
+            $image->image_path = 'http://localhost/storage/products/images/IMG_7054.jpg';
             $image->save();
             $image = new ImageProduct();
             $image->product_id = $product->id;
-            $image->image_path = 'http://localhost/storage/products/images/123123123.jpeg';
+            $image->image_path = 'http://localhost/storage/products/images/IMG_7054.jpg';
             $image->save();
             $image = new ImageProduct();
             $image->product_id = $product->id;
-            $image->image_path = 'http://localhost/storage/products/images/FB_IMG_1695664557388.jpeg';
+            $image->image_path = 'http://localhost/storage/products/images/IMG_7628.jpg';
             $image->save();
             
             $count = rand(1,4);
@@ -53,15 +53,15 @@ class ProductSeeder extends Seeder
                 $productColor->product_id = $product->id;
                 $productColor->color_id = $count;
                 $productColor->save();
-                $count1 = rand(1,8);
-                for ($k=0; $k <$count1  ; $k++) { 
+                $count1 = rand(1,3);
+                for ($k=0; $k <$count1 ; $k++) { 
                     $stock= new Stock();
                     $stock->product_color_id = $productColor->id;
                     $stock->size = $size[array_rand($size)];
                     $stock->quantity = rand(0,2000);
                     $stock->save();
                 }
-            }
+            }   
             
         }
         
