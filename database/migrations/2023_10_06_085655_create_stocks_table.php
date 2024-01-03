@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ProductColor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,15 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('email')->unique();
-            $table->string('fullname');
-            $table->string('phoneNumber');
-            $table->date('birthdate');
-            $table->string('gender');
-            $table->string('password');
-            $table->rememberToken();
+            $table->foreignIdFor(ProductColor::class);
+            $table->enum('size', ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL']);
+            $table->integer('quantity');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('stocks');
     }
 };
